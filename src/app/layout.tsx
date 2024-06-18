@@ -4,7 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import NavBar from "@/components/NavBar";
 import { Provider } from "react-redux";
-import { store } from "./store/store";
+// import { store } from "./store/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "@/components/ui/toaster";
@@ -21,13 +21,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <QueryClientProvider client={queryClient}>
-          <Provider store={store}>
+          
             <div className="h-screen">
-              <NavBar />
+              {/* <NavBar /> */}
               {children}
             </div>
             <Toaster />
-          </Provider>
+         
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </body>

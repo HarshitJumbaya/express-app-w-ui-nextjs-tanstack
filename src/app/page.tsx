@@ -12,18 +12,11 @@ export default function Home() {
       <h1 className="text-6xl p-2 m-2">
         Learning Routing and State Management
       </h1>
-      <Link href="/routing" className="rounded-md p-2 m-2 bg-blue-300">
-        Go to Routing
-      </Link>
-      <Link href="/state" className="rounded-md p-2 m-2 bg-blue-300">
-        Go to State Management
-      </Link>
+      
       <Link href="/config" className="rounded-md p-2 m-2 bg-blue-300">
         Go to Config Data
       </Link>
-      <Link href="/shadcn" className="rounded-md p-2 m-2 bg-blue-300">
-        Go to shad play
-      </Link>
+      
     </main>
   );
 }

@@ -1,43 +1,97 @@
-"use client";
-import { QueryClient, useQuery } from "@tanstack/react-query";
-import ConfigForm from "@/components/configForm";
+"use client"
+import React, { useState, ChangeEvent, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+import '../css/style.css';
 
 interface ConfigData {
-  [key: string]: string;
+  key: string;
+  value: string;
 }
+ 
+const fetchConfig = async (): Promise<ConfigData> => {
+  const response = await fetch('/api/config');
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+};
 
-const Page = () => {
-  const { isLoading, error, data } = useQuery<ConfigData, Error>({
-    queryKey: ["configData"],
-    queryFn: async () => {
-      try {
-        console.log("get request working");
-        const response = await fetch("http://localhost:4000/api/config");
-        if (!response.ok) throw new Error("Failed to Get Config Data");
-        return response.json();
-      } catch (error) {
-        console.log("Error during data Fetching: ", error);
-        return error;
-      }
+const updateConfig = async (newConfig: ConfigData): Promise<ConfigData> => {
+  const response = await fetch('/api/config', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
     },
-    refetchOnWindowFocus: false,
+    body: JSON.stringify(newConfig),
+  });
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  fetchConfig();
+  return response.json();
+};
+
+const ConfigEditor: React.FC = () => {
+  useEffect(() => {
+    fetchConfig();
+  }, []);
+  const queryClient = useQueryClient();
+  const [configInput, setConfigInput] = useState<string>('');
+
+  // const { data: configData, error, isLoading } = useQuery<ConfigData, Error>(['config'], fetchConfig);
+  const { data: configData, error, isLoading } = useQuery<ConfigData, Error>({
+    queryKey: ['config'],
+    queryFn: fetchConfig,
+  });
+  
+  const mutation = useMutation({
+    mutationFn: updateConfig,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['config']}); 
+      alert('JSON data updated successfully!');
+    },
+    onError: (error) => {
+      // Error actions
+      console.error('Failed to update configuration:', error);
+      alert('Failed to update configuration. Check console.');
+    },
   });
 
+
+  const handleUpdateConfig = () => {
+    try {
+      const parsedConfig = JSON.parse(configInput);
+      mutation.mutate(parsedConfig);
+    } catch (e) {
+      alert('Invalid JSON format');
+    }
+  };
+
+  if (isLoading) return 'Loading...';
+  if (error) return 'An error has occurred: ' + error.message;
+
   return (
-    <div className="flex justify-center items-center flex-col">
-      {isLoading && <h2>Loading...</h2>}
-      {error && <h2>Oops! An error has occured!</h2>}
-      {data && (
-        <p className="text-3xl m-2 p-2">
-          Config Data :{" "}
-          <span className="p-2 m-2 bg-green-300 rounded-md">
-            {JSON.stringify(data)}
-          </span>
-        </p>
-      )}
-      <ConfigForm />
+    <div className="container">
+      <h1>JSON File Editor</h1>
+      <div id="configDisplay">
+        <h2>Current Configuration</h2>
+        <pre id="configData">{JSON.stringify(configData, null, 2)}</pre>
+      </div>
+      <div id="configForm">
+        <h2>Update Configuration</h2>
+        <label htmlFor="configInput">New data (JSON format):</label>
+        <textarea
+          id="configInput"
+          placeholder="Enter JSON here..."
+          value={configInput}
+          onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setConfigInput(e.target.value)}
+        ></textarea>
+        <button onClick={handleUpdateConfig}>Update Configuration</button>
+      </div>
     </div>
   );
 };
 
-export default Page;
+export default ConfigEditor;
