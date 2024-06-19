@@ -1,6 +1,7 @@
 "use client"
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 import '../css/style.css';
 
@@ -36,6 +37,8 @@ const ConfigEditor: React.FC = () => {
   useEffect(() => {
     fetchConfig();
   }, []);
+
+  const router = useRouter();
   const queryClient = useQueryClient();
   const [configInput, setConfigInput] = useState<string>('');
 
@@ -89,7 +92,8 @@ const ConfigEditor: React.FC = () => {
           onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setConfigInput(e.target.value)}
         ></textarea>
         <button onClick={handleUpdateConfig}>Update Configuration</button>
-      </div>
+        <button onClick={() => router.push("/")}>Home</button>
+      </div> 
     </div>
   );
 };

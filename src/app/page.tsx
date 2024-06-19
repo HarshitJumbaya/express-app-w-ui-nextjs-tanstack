@@ -9,9 +9,9 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <main className="text-center p-2 flex justify-center items-center flex-col">
-      <h1 className="text-6xl p-2 m-2">
-        Learning Routing and State Management
-      </h1>
+      <h2 className="text-6xl p-2 m-2">
+        Learning usage of @tanstack/react-query in express-app
+      </h2>
       
       <Link href="/config" className="rounded-md p-2 m-2 bg-blue-300">
         Go to Config Data
